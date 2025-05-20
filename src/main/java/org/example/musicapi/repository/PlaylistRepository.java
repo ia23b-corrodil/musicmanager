@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PlaylistRepository extends JpaRepository<Playlist, Integer> {
-    // Du kannst hier eigene Query-Methoden ergänzen, z.B.:
+    // habe noch nichts drin
     // List<Playlist> findByPlaylistname(String name);
 }

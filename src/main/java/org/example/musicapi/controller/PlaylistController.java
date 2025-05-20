@@ -12,7 +12,6 @@ import java.util.List;
 public class PlaylistController {
 
     private final PlaylistService service;
-
     public PlaylistController(PlaylistService service) {
         this.service = service;
     }
