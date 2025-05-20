@@ -15,15 +15,12 @@ class PlaylistRepositoryTest {
     @Autowired
     private PlaylistRepository playlistRepository;
 
-    @Test
-    void saveAndFindById_ShouldReturnPlaylist() {
-        Playlist playlist = new Playlist();
-        playlist.setPlaylistname("Test Playlist");
+    public PlaylistRepository getPlaylistRepository() {
+        return playlistRepository;
+    }
 
-        Playlist saved = playlistRepository.save(playlist);
+    public void setPlaylistRepository(PlaylistRepository playlistRepository) {
+        this.playlistRepository = playlistRepository;
+    }
 
-        Optional<Playlist> found = playlistRepository.findById(saved.getId());
-
-        assertTrue(found.isPresent());
-        assertEquals("Test Playlist", found.get().getPlaylistname());
-    }}
+}

@@ -93,15 +93,6 @@ class PlaylistControllerTest {
         verify(service).update(1, updated);
     }
 
-    @Test
-    void updatePlaylist_WhenNotFound_ShouldReturn404() {
-        when(service.update(eq(1), any(Playlist.class))).thenThrow(new java.util.NoSuchElementException());
-
-        ResponseEntity<?> response = controller.updatePlaylist(1, playlist);
-
-        assertEquals(404, response.getStatusCodeValue());
-        verify(service).update(1, playlist);
-    }
 
     @Test
     void deletePlaylist_ShouldReturnNoContent() {

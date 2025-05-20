@@ -1,3 +1,5 @@
+package org.example.musicapi.service;
+
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Path;
 import jakarta.validation.Validator;
