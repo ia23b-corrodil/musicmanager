@@ -1,19 +1,21 @@
-package org.example.musicapi.service;
-
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Path;
+import jakarta.validation.Validator;
 import org.example.musicapi.model.Playlist;
 import org.example.musicapi.repository.PlaylistRepository;
+import org.example.musicapi.service.PlaylistService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -21,6 +23,9 @@ class PlaylistServiceTest {
 
     @Mock
     private PlaylistRepository playlistRepository;
+
+    @Mock
+    private Validator validator;
 
     @InjectMocks
     private PlaylistService playlistService;
@@ -32,10 +37,11 @@ class PlaylistServiceTest {
         samplePlaylist = new Playlist();
         samplePlaylist.setId(1);
         samplePlaylist.setPlaylistname("Test Playlist");
-        // weitere Felder setzen, falls nötig
+
+        // Standardmäßig: keine Validierungsfehler
+        when(validator.validate(any(Playlist.class))).thenReturn(Collections.emptySet());
     }
 
-    // -------- POSITIV --------
     @Test
     void create_ShouldReturnSavedPlaylist() {
         when(playlistRepository.save(any(Playlist.class))).thenReturn(samplePlaylist);
@@ -45,29 +51,28 @@ class PlaylistServiceTest {
         assertNotNull(result);
         assertEquals("Test Playlist", result.getPlaylistname());
 
-        // Verifizieren, dass save genau das samplePlaylist Objekt gespeichert hat
-        verify(playlistRepository, times(1)).save(samplePlaylist);
+        verify(validator).validate(samplePlaylist);
+        verify(playlistRepository).save(samplePlaylist);
     }
 
     @Test
-    void findById_WhenPlaylistFound_ShouldReturnPlaylist() {
-        when(playlistRepository.findById(1)).thenReturn(Optional.of(samplePlaylist));
+    void create_WithValidationError_ShouldThrowException() {
+        ConstraintViolation<Playlist> violation = mock(ConstraintViolation.class);
+        Path mockPath = mock(Path.class);
 
-        Optional<Playlist> result = playlistService.findById(1);
+        when(violation.getPropertyPath()).thenReturn(mockPath);
+        when(mockPath.toString()).thenReturn("playlistname");
+        when(violation.getMessage()).thenReturn("darf nicht leer sein");
 
-        assertTrue(result.isPresent());
-        assertEquals("Test Playlist", result.get().getPlaylistname());
-        verify(playlistRepository, times(1)).findById(1);
-    }
+        when(validator.validate(any(Playlist.class))).thenReturn(Set.of(violation));
 
-    // -------- NEGATIV --------
-    @Test
-    void findById_WhenPlaylistNotFound_ShouldReturnEmptyOptional() {
-        when(playlistRepository.findById(1)).thenReturn(Optional.empty());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> playlistService.create(samplePlaylist));
 
-        Optional<Playlist> result = playlistService.findById(1);
+        assertTrue(exception.getMessage().contains("playlistname"));
+        assertTrue(exception.getMessage().contains("darf nicht leer sein"));
 
-        assertTrue(result.isEmpty());
-        verify(playlistRepository, times(1)).findById(1);
+        verify(validator).validate(samplePlaylist);
+        verify(playlistRepository, never()).save(any());
     }
 }

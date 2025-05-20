@@ -17,7 +17,6 @@ public class Song {
 
     @Id
     @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
     @Pattern(regexp = "^[A-Za-z\\s]+$", message = "Songname darf nur Buchstaben und Leerzeichen enthalten")
@@ -43,6 +42,7 @@ public class Song {
 
     @Pattern(regexp = "hoch|mittel|niedrig")
     private String beliebtheit;
+
 
 
     @ManyToOne
