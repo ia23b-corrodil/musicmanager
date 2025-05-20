@@ -20,7 +20,9 @@ public class Song {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
+    @Pattern(regexp = "^[A-Za-z\\s]+$", message = "Songname darf nur Buchstaben und Leerzeichen enthalten")
     private String song;
+
     private String titel;
 
     @NotBlank

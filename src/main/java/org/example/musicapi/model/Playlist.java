@@ -1,6 +1,9 @@
 package org.example.musicapi.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,9 +23,14 @@ public class Playlist {
 
     private String song;
 
+    @NotNull
+    @Size(max = 50, message = "Playlistname darf maximal 50 Zeichen lang sein")
     private String playlistname;
 
+
+    @PastOrPresent(message = "Erstelldatum darf nicht in der Zukunft liegen")
     private LocalDate erstelldatum;
+
 
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Song> songs;
