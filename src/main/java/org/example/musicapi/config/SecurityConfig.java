@@ -42,14 +42,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/songs").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/songs/**").permitAll()
 
-                        // Authentifizierung erforderlich für Änderungen
+                        // Authentifizierung erforderlich für Änderungen authenticated
                         .requestMatchers(HttpMethod.POST, "/api/playlists/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/playlists/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/playlists/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/playlists/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/playlists/**").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/songs/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/songs/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/songs/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/songs/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/songs/**").permitAll()
 
                         // Alle anderen Anfragen zulassen
                         .anyRequest().permitAll()
