@@ -11,7 +11,7 @@ Die API ist Teil des m295-Projekts von Lara Corrodi und dient als Backend-System
 **Klassendiagramm**
 ![img_4.png](img_4.png)
 
-**Screenshots der Testdurchführung**
+**Screenshots der Testdurchführung** \
 erster Teil der Tests
 ![img.png](img.png)
 
