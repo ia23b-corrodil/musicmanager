@@ -18,6 +18,12 @@ In der Playlist-Entität sind folgende Validierungsregeln definiert:
 3. **Erstelldatum** (LocalDate):  
    Das Erstelldatum darf nicht in der Zukunft liegen, es muss in der Vergangenheit oder heute sein.
 
+erster Teil der Tests
+![img.png](img.png)
+
+Zweiter Teil der Tests
+![img_3.png](img_3.png)
+
 
 ## Berechtigungsmatrix
 ![img_2.png](img_2.png)
