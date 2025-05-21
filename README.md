@@ -5,7 +5,18 @@ Dieses Projekt ist eine Spring Boot-basierte REST-API zur Verwaltung von Musikpl
 Die API ist Teil des m295-Projekts von Lara Corrodi und dient als Backend-System für eine Musikverwaltungsanwendung.
 
 ## Datenbankdiagramm, Klassendiagramm, Screenshot der Testdurchführung
+**Datenbankdiagramm**
 ![img_1.png](img_1.png)
+
+**Klassendiagramm**
+![img_4.png](img_4.png)
+
+**Screenshots der Testdurchführung**
+erster Teil der Tests
+![img.png](img.png)
+
+Zweiter Teil der Tests
+![img_3.png](img_3.png)
 ## Validierungsregeln
 In der Playlist-Entität sind folgende Validierungsregeln definiert:
 
@@ -17,12 +28,6 @@ In der Playlist-Entität sind folgende Validierungsregeln definiert:
 
 3. **Erstelldatum** (LocalDate):  
    Das Erstelldatum darf nicht in der Zukunft liegen, es muss in der Vergangenheit oder heute sein.
-
-erster Teil der Tests
-![img.png](img.png)
-
-Zweiter Teil der Tests
-![img_3.png](img_3.png)
 
 
 ## Berechtigungsmatrix
