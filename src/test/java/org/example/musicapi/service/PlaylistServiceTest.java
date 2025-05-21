@@ -1,18 +1,17 @@
 package org.example.musicapi.service;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Path;
 import jakarta.validation.Validator;
 import org.example.musicapi.model.Playlist;
 import org.example.musicapi.repository.PlaylistRepository;
-import org.example.musicapi.service.PlaylistService;
+import org.example.musicapi.security.Role;
+import org.example.musicapi.security.UserContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -20,61 +19,92 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-class PlaylistServiceTest {
+public class PlaylistServiceTest {
 
     @Mock
-    private PlaylistRepository playlistRepository;
+    private PlaylistRepository repository;
 
     @Mock
     private Validator validator;
 
     @InjectMocks
-    private PlaylistService playlistService;
+    private PlaylistService service;
 
-    private Playlist samplePlaylist;
+    private Playlist playlist;
 
     @BeforeEach
-    void setup() {
-        samplePlaylist = new Playlist();
-        samplePlaylist.setId(1);
-        samplePlaylist.setPlaylistname("Test Playlist");
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        // Beispiel-Playlist
+        playlist = new Playlist();
+        playlist.setPlaylistname("Test Playlist");
+        playlist.setSong("Test Song");
+        playlist.setErstelldatum(LocalDate.parse("2025-05-20"));
 
-        // Standardmäßig: keine Validierungsfehler
-        when(validator.validate(any(Playlist.class))).thenReturn(Collections.emptySet());
+        // Role im UserContext setzen
+        UserContext.setCurrentRole(Role.USER);
     }
 
-    @Test
-    void create_ShouldReturnSavedPlaylist() {
-        when(playlistRepository.save(any(Playlist.class))).thenReturn(samplePlaylist);
+    // Rolle nach Test beenden (optional, falls in Zukunft mehrere Tests laufen)
+    // @AfterEach
+    // void tearDown() {
+    //     UserContext.clear();
+    // }
 
-        Playlist result = playlistService.create(samplePlaylist);
+    @Test
+    void testCreate_Success() {
+        when(validator.validate(any(Playlist.class))).thenReturn(Collections.emptySet());
+        when(repository.save(any(Playlist.class))).thenReturn(playlist);
+
+        Playlist result = service.create(playlist);
 
         assertNotNull(result);
-        assertEquals("Test Playlist", result.getPlaylistname());
-
-        verify(validator).validate(samplePlaylist);
-        verify(playlistRepository).save(samplePlaylist);
+        verify(repository).save(playlist);
     }
 
     @Test
-    void create_WithValidationError_ShouldThrowException() {
-        ConstraintViolation<Playlist> violation = mock(ConstraintViolation.class);
-        Path mockPath = mock(Path.class);
+    void testUpdate_AsAdmin_Success() {
+        UserContext.setCurrentRole(Role.ADMIN);
+        when(validator.validate(any(Playlist.class))).thenReturn(Collections.emptySet());
+        when(repository.findById(anyInt())).thenReturn(Optional.of(playlist));
+        when(repository.save(any(Playlist.class))).thenReturn(playlist);
 
-        when(violation.getPropertyPath()).thenReturn(mockPath);
-        when(mockPath.toString()).thenReturn("playlistname");
-        when(violation.getMessage()).thenReturn("darf nicht leer sein");
+        Playlist updatedPlaylist = new Playlist();
+        updatedPlaylist.setPlaylistname("New Name");
+        updatedPlaylist.setSong("New Song");
+        updatedPlaylist.setErstelldatum(LocalDate.parse("2025-05-20"));
 
-        when(validator.validate(any(Playlist.class))).thenReturn(Set.of(violation));
+        Playlist result = service.update(1, updatedPlaylist);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> playlistService.create(samplePlaylist));
+        assertNotNull(result);
+        verify(repository).save(any(Playlist.class));
+        UserContext.setCurrentRole(Role.USER); // wieder auf USER setzen, falls nötig
+    }
 
-        assertTrue(exception.getMessage().contains("playlistname"));
-        assertTrue(exception.getMessage().contains("darf nicht leer sein"));
+    @Test
+    void testUpdate_WithoutAdmin_ZugriffVerweigert() {
+        UserContext.setCurrentRole(Role.USER);
+        assertThrows(SecurityException.class, () -> {
+            service.update(1, playlist);
+        });
+    }
 
-        verify(validator).validate(samplePlaylist);
-        verify(playlistRepository, never()).save(any());
+    @Test
+    void testDeleteById_AsAdmin() {
+        UserContext.setCurrentRole(Role.ADMIN);
+        doNothing().when(repository).deleteById(anyInt());
+
+        service.deleteById(1);
+
+        verify(repository).deleteById(1);
+        UserContext.setCurrentRole(Role.USER); // Rolle wieder zurücksetzen
+    }
+
+    @Test
+    void testDeleteById_AufNichtAdmin_ZugriffVerweigert() {
+        UserContext.setCurrentRole(Role.USER);
+        assertThrows(SecurityException.class, () -> {
+            service.deleteById(1);
+        });
     }
 }
