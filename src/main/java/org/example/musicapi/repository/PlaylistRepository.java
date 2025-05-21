@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PlaylistRepository extends JpaRepository<Playlist, Integer> {
-    // habe noch nichts drin
+    // habe nichts drin
     // List<Playlist> findByPlaylistname(String name);
 }

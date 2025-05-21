@@ -43,6 +43,7 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(user, admin);
     }
 
+    // Spring Security FilterChain
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

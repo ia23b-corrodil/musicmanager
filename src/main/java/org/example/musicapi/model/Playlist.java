@@ -27,7 +27,7 @@ public class Playlist {
     @Size(max = 50, message = "Playlistname darf maximal 50 Zeichen lang sein")
     private String playlistname;
 
-
+    // Erstelldatum muss vor der aktuellen Zeit liegen
     @PastOrPresent(message = "Erstelldatum darf nicht in der Zukunft liegen")
     private LocalDate erstelldatum;
 

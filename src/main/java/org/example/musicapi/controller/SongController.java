@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// Hier wird sozusagen create table und so SQL erstellt von Song
 @RestController
 @RequestMapping("/api/songs")
 public class SongController {
